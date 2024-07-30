@@ -3,6 +3,7 @@ const app = express();
 const path = require('path');
 
 const userModel = require('./models/user.js');
+const donatorModel = require('./models/donator.js');
 
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -18,6 +19,28 @@ app.get("/",(req,res)=>{
     res.render("home");
 })
 
+// Donator Module
+app.post("/donator", async (req, res) => {
+    try {
+      const { item_name,type,category,qtypp,email,phone,district,pickup_add } = req.body;
+      const donatorData = await new donatorModel({
+        item_name,
+        type,
+        category,
+        qtypp,
+        email,
+        phone,
+        district,
+        pickup_add,
+      });
+      await donatorData.save();
+      res.redirect('/');
+    } catch (error) {
+      console.log(error);
+    }
+});
+
+// User Module
 app.get('/signup',(req,res)=>{
     res.render("signup");
 })
