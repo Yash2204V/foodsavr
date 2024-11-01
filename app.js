@@ -8,6 +8,7 @@ const donatorModel = require('./models/donator.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const secretKey = "shhhhhh";    
 
 app.set("view engine", "ejs");
 app.use(express.static(path.join(__dirname + '/public')));
@@ -49,6 +50,8 @@ app.get('/login',(req,res)=>{
     res.render("login");
 })
 
+
+// Create User  
 app.post('/create',(req,res)=>{
     const {name,email,phone_no,password} = req.body;
     bcrypt.genSalt(10, function(err, salt) {
@@ -60,17 +63,35 @@ app.post('/create',(req,res)=>{
                 password: hash
             })
             user.save();
-            const token = jwt.sign({email, id:user._id}, "shhhhhh");
+            const token = jwt.sign({email, id:user._id}, secretKey);
             res.cookie("token",token);
             res.redirect("/login");
         });
     });
 })
 
-app.get('/profile',LoggedIn,(req,res)=>{
-    res.render("profile");
-})
 
+
+// Profile Page 
+app.get('/profile', LoggedIn, async (req, res) => {
+    try {
+        const token = req.cookies.token;
+        const decoded = jwt.verify(token, secretKey);
+        const userData = await userModel.findOne({ email: decoded.email });
+        
+        // Fetch all donator data without filtering by email
+        const donatorData = await donatorModel.find();         
+        res.render('profile', { 
+            user: userData,
+            donations: donatorData 
+        });  
+    } catch (error) {
+        console.error("Error in /profile route:", error);
+        res.status(500).send('Server Error');
+    }
+});
+
+// Login User
 app.post('/login',async (req,res)=>{
     const { email, password } = req.body;
     
@@ -79,7 +100,7 @@ app.post('/login',async (req,res)=>{
     if(!user) return res.status(500).send("something went wrong"); 
     bcrypt.compare(password, user.password, function(err, result) {
         if(result){
-            const token = jwt.sign({email: user.email, id:user._id}, "shhhh");
+            const token = jwt.sign({email: user.email, id:user._id}, secretKey);
             res.cookie("token",token);
             res.status(400).redirect("/profile");
         } 
@@ -89,12 +110,11 @@ app.post('/login',async (req,res)=>{
     });
 })
 
+// Logout User
 app.get('/logout',(req,res)=>{
     res.cookie("token","");
     res.redirect('/');
 })
-
-
 
 function LoggedIn(req,res,next){
     const token = req.cookies.token;
@@ -105,6 +125,13 @@ function LoggedIn(req,res,next){
         res.redirect('/login');
     }
 }
+
+// Received Donations
+app.post('/donations/received/:id', async (req, res) => {
+    const { id } = req.params;
+    await donatorModel.deleteOne({ _id: id });
+    res.redirect('/profile');
+}); 
 
 app.listen(3000,()=>{
     console.log("server running http://localhost:3000/");

@@ -25,16 +25,16 @@
                 </button>
                 <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
                     <ul class="navbar-nav">
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav ml-auto ">
-                        <li class="nav-item active">
-                            <a class="nav-link" href="/">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-danger" href="/logout">Logout</a>
-                        </li>
-                    </ul>
-                </div>
+                        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                            <ul class="navbar-nav ml-auto ">
+                                <li class="nav-item active">
+                                    <a class="nav-link" href="/">Home</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-danger" href="/logout">Logout</a>
+                                </li>
+                            </ul>
+                        </div>
             </nav>
         </div>
         <div class="cont-sec">
@@ -57,13 +57,106 @@
         </div>
     </header>
 
-    
-    <section style="min-height: 100vh; background-color: lightgray;">
-        <div class="container">
-            <div class="row" style="padding-top: 100px">
-                <div class="col-lg-12">
-                    <div class="col-one">
-                        <h3>Hey User, Welcome to FoodSavR</h3>
+
+    <section style="min-height: 100vh; padding-top: 100px; background-color: #f8f9fa;">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-body text-center">
+                            <h5 class="my-3">Hello <%= user.name %>
+                            </h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-body">
+                            <h4 class="mb-4">Donations</h4>
+                            <% if(donations && donations.length> 0) { %>
+                                <div class="table-responsive">
+                                    <table class="table table-striped table-hover">
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th>Item Name</th>
+                                                <th>Type</th>
+                                                <th>Category</th>
+                                                <th>Quantity</th>
+                                                <th>District</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% donations.forEach(donation=> { %>
+                                                <tr>
+                                                    <td>
+                                                        <%= donation.item_name %>
+                                                    </td>
+                                                    <td>
+                                                        <%= donation.type %>
+                                                    </td>
+                                                    <td>
+                                                        <%= donation.category %>
+                                                    </td>
+                                                    <td>
+                                                        <%= donation.qtypp %>
+                                                    </td>
+                                                    <td>
+                                                        <%= donation.district %>
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-primary btn-sm" data-toggle="modal"
+                                                            data-target="#contactModal<%= donation.id %>">Request</button>
+
+                                                        <!-- Modal -->
+                                                        <div class="modal fade" id="contactModal<%= donation.id %>"
+                                                            tabindex="-1" role="dialog"
+                                                            aria-labelledby="contactModalLabel<%= donation.id %>"
+                                                            aria-hidden="true">
+                                                            <div class="modal-dialog" role="document">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title"
+                                                                            id="contactModalLabel<%= donation.id %>">
+                                                                            Contact Information</h5>
+                                                                        <button type="button" class="close"
+                                                                            data-dismiss="modal" aria-label="Close">
+                                                                            <span aria-hidden="true">&times;</span>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <p>Contact Number: <%= donation.phone %>
+                                                                        </p>
+                                                                        <p>Email: <%= donation.email %>
+                                                                        </p>
+                                                                        <p>District: <%= donation.district %>
+                                                                        </p>
+                                                                        <p>Pickup Address: <%= donation.pickup_add %>
+                                                                        </p>
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <form
+                                                                            action="/donations/received/<%= donation._id %>"
+                                                                            method="POST" style="display:inline;">
+                                                                            <button type="button" class="btn btn-danger"
+                                                                                data-dismiss="modal">Close</button>
+                                                                            <button type="submit"
+                                                                                class="btn btn-success">Recieved</button>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <% } else { %>
+                                    <p class="text-muted">No donations made yet.</p>
+                                    <% } %>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -82,7 +175,7 @@
                         <p>Contact No : <a href="tel: +91 98659****59">+91 98659****59</a></p>
                         <p>Email : <a href="FWRS@company.com">FWRS@company.com</a></p>
                     </div>
-                </div> 
+                </div>
                 <div class="col-lg-4">
                     <div class="col-one">
                         <h4>Social Media</h4>
