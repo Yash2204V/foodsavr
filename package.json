@@ -4,8 +4,9 @@
   "description": "This is the FoodSavR, your one stop solution for all your food wastage needs.",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "npm run dev:css && node app.js",
     "dev": "nodemon app.js",
+    "dev:css": "npx tailwindcss -i ./src/input.css -o ./src/output.css",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -20,5 +21,8 @@
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.10.0",
     "mongoose": "^8.5.1"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.14"
   }
 }
